@@ -26,4 +26,8 @@ async iniciarChat(userId: string) {
     return response.data;
   },
     
+  async listarMensagens(sessionId: string) {
+    const response = await api.get(`/chat/listar-mensagens/${sessionId}`);
+    return response.data;
+  },
 }

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { chatService } from "../../services/chat/chatService";
 
 interface Message {
   id: number;
   text: string;
-  sender: "me" | "other";
+  sender: "USER" | "BOT";
 }
 
 export const ChatHeader: React.FC = () => {
@@ -39,23 +39,40 @@ const ChatPage: React.FC = () => {
     {
       id: 1,
       text: "Olá! Clique em enviar para iniciar sua conversa com Hermes 🤖",
-      sender: "other",
+      sender: "BOT",
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [secaoIniciada, setSecaoIniciada] = useState(false)
 
   // Estado de controle de sessão
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string>('123');
   const [conversaFinalizada, setConversaFinalizada] = useState(false);
 
+  async function iniciarSecao() {
+    const inicio = await chatService.iniciarChat("123");
+    if (inicio) {
+       setSecaoIniciada(true)
+       await chatService.listarMensagens(inicio?.sessionId).then(res => {
+          setMessages(res.map((ms: any) => {
+             return {id: ms.id, sender: ms.sender, text: ms.content} as Message
+          }))
+       })
+    }
+  }
+
+  useEffect(() => {
+     iniciarSecao()
+  },[])
+
   const handleSend = async () => {
-    if (input.trim() === "" || conversaFinalizada) return;
+    if (input.trim() === "" || conversaFinalizada || !secaoIniciada) return;
 
     const newMessage: Message = {
       id: messages.length + 1,
       text: input,
-      sender: "me",
+      sender: "USER",
     };
 
     setMessages([...messages, newMessage]);
@@ -63,23 +80,13 @@ const ChatPage: React.FC = () => {
     setLoading(true);
 
     try {
-      let respostaApi: any;
-
-      if (!userId) {
-        // primeira mensagem -> inicia chat
-        const inicio = await chatService.iniciarChat("123"); //colocar id do usuario depois que login for feito
-        setUserId(inicio.user_id);
-        respostaApi = inicio;
-      } else {
-        // mensagens seguintes -> processar
-        respostaApi = await chatService.processarMensagem(userId, input);
-      }
+      let respostaApi: any = await chatService.processarMensagem(userId, input);
 
       // Mensagem de resposta do Hermes
       const newMessageApi: Message = {
         id: messages.length + 2,
-        text: respostaApi.resposta || respostaApi.mensagem_final,
-        sender: "other",
+        text: respostaApi.rawResponse?.resposta || respostaApi.rawResponse?.mensagem_final,
+        sender: "BOT",
       };
 
       setMessages((prev) => [...prev, newMessageApi]);
@@ -93,7 +100,7 @@ const ChatPage: React.FC = () => {
         {
           id: messages.length + 2,
           text: "⚠️ Ocorreu um erro na comunicação.",
-          sender: "other",
+          sender: "BOT",
         },
       ]);
     } finally {
@@ -112,12 +119,12 @@ const ChatPage: React.FC = () => {
           <div
             key={msg.id}
             className={`flex ${
-              msg.sender === "me" ? "justify-end" : "justify-start"
+              msg.sender === "USER" ? "justify-end" : "justify-start"
             }`}
           >
             <div
               className={`px-4 py-2 rounded-2xl max-w-xs shadow ${
-                msg.sender === "me"
+                msg.sender === "BOT"
                   ? "bg-blue-500 text-white rounded-br-none"
                   : "bg-white text-gray-800 rounded-bl-none"
               }`}
