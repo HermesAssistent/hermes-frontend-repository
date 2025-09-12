@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { chatService } from "../../services/chat/chatService";
 
 interface Message {
@@ -44,27 +44,43 @@ const ChatPage: React.FC = () => {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [secaoIniciada, setSecaoIniciada] = useState(false)
+  const [secaoIniciada, setSecaoIniciada] = useState(false);
+  const [secaoFinalizada, setSecaoFinalizada] = useState(false)
 
   // Estado de controle de sessão
-  const [userId, setUserId] = useState<string>('123');
+  const [userId, setUserId] = useState<string>("123");
   const [conversaFinalizada, setConversaFinalizada] = useState(false);
+
+  // Ref para scroll automático
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   async function iniciarSecao() {
     const inicio = await chatService.iniciarChat("123");
     if (inicio) {
-       setSecaoIniciada(true)
-       await chatService.listarMensagens(inicio?.sessionId).then(res => {
-          setMessages(res.map((ms: any) => {
-             return {id: ms.id, sender: ms.sender, text: ms.content} as Message
-          }))
-       })
+      setSecaoIniciada(true);
+      await chatService.listarMensagens(inicio?.sessionId).then((res) => {
+        setMessages(
+          messages.concat(
+            res.map((ms: any) => {
+              return { id: ms.id, sender: ms.sender, text: ms.content } as Message;
+            })
+          )
+        );
+        setSecaoFinalizada(false)
+      });
     }
   }
 
   useEffect(() => {
-     iniciarSecao()
-  },[])
+    iniciarSecao();
+  }, []);
+
+  // Scroll automático sempre que mensagens ou loading mudarem
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, loading]);
 
   const handleSend = async () => {
     if (input.trim() === "" || conversaFinalizada || !secaoIniciada) return;
@@ -80,12 +96,21 @@ const ChatPage: React.FC = () => {
     setLoading(true);
 
     try {
+      if (conversaFinalizada) {
+         await iniciarSecao()
+      }
+
       let respostaApi: any = await chatService.processarMensagem(userId, input);
 
+      if (respostaApi?.rawResponse?.conversa_finalizada) {
+         setConversaFinalizada(true)
+      }
       // Mensagem de resposta do Hermes
       const newMessageApi: Message = {
         id: messages.length + 2,
-        text: respostaApi.rawResponse?.resposta || respostaApi.rawResponse?.mensagem_final,
+        text:
+          respostaApi.rawResponse?.resposta ||
+          respostaApi.rawResponse?.mensagem_final,
         sender: "BOT",
       };
 
@@ -142,6 +167,9 @@ const ChatPage: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* âncora invisível para scroll */}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input de mensagem */}
