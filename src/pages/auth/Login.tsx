@@ -1,5 +1,8 @@
 import React, { useState, ChangeEvent, JSX } from 'react';
 import { Eye, EyeOff, User, Mail, Lock, Phone, MapPin, Sparkles, UserPlus, LogIn } from 'lucide-react';
+import { authService } from '../../services/auth/authService';
+import { useNavigate } from 'react-router-dom';
+import { LoginCredentials } from '../../types/auth';
 
 interface FormData {
   nome: string;
@@ -18,6 +21,7 @@ interface FormErrors {
 }
 
 export default function LoginSignupForm(): JSX.Element {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
@@ -28,6 +32,8 @@ export default function LoginSignupForm(): JSX.Element {
     endereco: ''
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [mensagem, setMensagem] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
@@ -79,15 +85,35 @@ export default function LoginSignupForm(): JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (): void => {
-    if (validateForm()) {
-      if (isLogin) {
-        console.log('Login realizado:', { email: formData.email, senha: formData.senha });
-        alert('Login realizado com sucesso!');
-      } else {
-        console.log('Cadastro realizado:', formData);
-        alert('Cadastro realizado com sucesso!');
+  const handleSubmit = async (): Promise<void> => {
+    setCarregando(true);
+    setMensagem('');
+
+    try {
+      if (validateForm()) {
+        if (isLogin) {
+          const credenciais: LoginCredentials = {email: formData.email, password: formData.senha};
+          await authService.login(credenciais);
+          console.log('Login realizado:', { email: formData.email });
+          setTimeout(() => {
+            navigate('/');
+          }, 1500);
+          
+        } else {
+          await authService.register(formData);
+          console.log('Cadastro realizado:', formData);
+
+          setMensagem('Cadastro realizado! Faça login com suas credenciais.');
+          setTimeout(() => {
+            navigate('/login');
+          }, 1500);
+          setIsLogin(true);
+        }
       }
+    }catch (error: any) {
+      setMensagem('Erro: ' + error.message);
+    } finally {
+      setCarregando(false);
     }
   };
 
@@ -109,6 +135,7 @@ export default function LoginSignupForm(): JSX.Element {
 
   const toggleMode = (): void => {
     setIsLogin(!isLogin);
+    setMensagem('');
     setFormData({
       nome: '',
       email: '',
@@ -156,8 +183,15 @@ export default function LoginSignupForm(): JSX.Element {
             <Sparkles className="w-4 h-4 text-white/40 animate-pulse delay-700" />
           </div>
         </div>
-
         <div className="p-8">
+          {mensagem && (
+            <div className={`p-4 rounded-xl mb-6 flex items-center ${
+              mensagem.includes('Erro') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+            }`}>
+              <div className="w-2 h-2 rounded-full mr-3 bg-current"></div>
+              {mensagem}
+            </div>
+          )}
           <div className="space-y-6">
             {!isLogin && (
               <div className="group">
@@ -303,11 +337,12 @@ export default function LoginSignupForm(): JSX.Element {
             <button
               type="button"
               onClick={handleSubmit}
+              disabled={carregando}
               className="relative w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] transition-all duration-300 font-semibold text-lg shadow-xl hover:shadow-2xl group overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative flex items-center justify-center">
-                {isLogin ? (
+                {carregando ? 'Processando...' : (isLogin ? (
                   <>
                     <LogIn className="w-5 h-5 mr-2" />
                     Entrar na Conta
@@ -317,7 +352,7 @@ export default function LoginSignupForm(): JSX.Element {
                     <UserPlus className="w-5 h-5 mr-2" />
                     Criar Conta
                   </>
-                )}
+                ))}
               </div>
             </button>
           </div>
