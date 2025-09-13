@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User, MessageCircle, Settings, LogOut, Send, Menu, X } from "lucide-react";
+import { User, MessageCircle, Settings, LogOut, Send, Menu, X, GrapeIcon, GitGraph, Notebook } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
@@ -122,7 +122,7 @@ const HomePage = () => {
             <p className="text-gray-600">Gerencie suas informações pessoais e preferências da conta.</p>
           </div>
 
-          <div className="bg-white border-2 border-blue-100 rounded-xl p-6 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer">
+          <div onClick={() => navigate('/chat')} className="bg-white border-2 border-blue-100 rounded-xl p-6 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
               <MessageCircle className="w-6 h-6 text-blue-600" />
             </div>
@@ -130,12 +130,12 @@ const HomePage = () => {
             <p className="text-gray-600">Converse com nossa IA para obter ajuda e suporte instantâneo.</p>
           </div>
 
-          <div className="bg-white border-2 border-blue-100 rounded-xl p-6 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer">
+          <div onClick={() => navigate('/sinistro')} className="bg-white border-2 border-blue-100 rounded-xl p-6 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <Settings className="w-6 h-6 text-blue-600" />
+              <Notebook className="w-6 h-6 text-blue-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">Configurações</h3>
-            <p className="text-gray-600">Personalize sua experiência e ajuste as configurações do sistema.</p>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">Visualize seus relatórios</h3>
+            <p className="text-gray-600">Acompanhe o andamento das suas solicitações.</p>
           </div>
         </div>
 

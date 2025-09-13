@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { chatService } from "../../services/chat/chatService";
-
-interface Message {
-  id: number;
-  text: string;
-  sender: "USER" | "BOT";
-}
+import { Message } from "../../types/auth";
 
 export const ChatHeader: React.FC = () => {
   return (
@@ -53,6 +48,7 @@ const ChatPage: React.FC = () => {
 
   // Ref para scroll automático
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const iniciouRef = useRef(false);
 
   async function iniciarSecao() {
     const inicio = await chatService.iniciarChat("123");
@@ -72,7 +68,10 @@ const ChatPage: React.FC = () => {
   }
 
   useEffect(() => {
-    iniciarSecao();
+    if (!iniciouRef.current) {
+      iniciarSecao();
+      iniciouRef.current = true;
+    }
   }, []);
 
   // Scroll automático sempre que mensagens ou loading mudarem

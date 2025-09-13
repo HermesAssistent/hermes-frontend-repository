@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "../pages/home";
 import ChatPage from "../pages/chat";
 import LoginSignupForm from "../pages/auth/Login";
+import SinistroViewer from "../pages/sinistro";
 
 export const AppRouter: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ export const AppRouter: React.FC = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/login" element={<LoginSignupForm />} />
+        <Route path="/sinistro" element={<SinistroViewer />} />
       </Routes>
     </Router>
   );
