@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User, MessageCircle, Settings, LogOut, Send, Menu, X } from "lucide-react";
+import { User, MessageCircle, Settings, LogOut, Send, Menu, X, GrapeIcon, GitGraph, Notebook } from "lucide-react";
 import { authService } from '../../services/auth/authService';
 import { useNavigate } from "react-router-dom";
 

@@ -1,8 +1,9 @@
-import React, { JSX, useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "../pages/home";
 import ChatPage from "../pages/chat";
 import LoginSignupForm from "../pages/auth/Login";
+import SinistroViewer from "../pages/sinistro";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../firebase.config";
 
@@ -31,13 +32,13 @@ export const AppRouter: React.FC = () => {
     <Router>
       {/*colocar navbar aqui depois */}
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
             <ProtectedRoute>
               <HomePage />
             </ProtectedRoute>
-          } 
+          }
         />
         <Route
           path="/chat"
@@ -48,6 +49,7 @@ export const AppRouter: React.FC = () => {
           }
         />
         <Route path="/login" element={<LoginSignupForm />} />
+        <Route path="/sinistro" element={<SinistroViewer />} />
       </Routes>
     </Router>
   );
