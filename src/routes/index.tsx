@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { JSX, useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "../pages/home";
 import ChatPage from "../pages/chat";
 import LoginSignupForm from "../pages/auth/Login";
@@ -49,7 +49,14 @@ export const AppRouter: React.FC = () => {
           }
         />
         <Route path="/login" element={<LoginSignupForm />} />
-        <Route path="/sinistro" element={<SinistroViewer />} />
+        <Route 
+          path="/sinistro" 
+          element={
+            <ProtectedRoute>
+              <SinistroViewer />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </Router>
   );
