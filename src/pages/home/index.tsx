@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { User, MessageCircle, Settings, LogOut, Send, Menu, X, GrapeIcon, GitGraph, Notebook } from "lucide-react";
+import { authService } from '../../services/auth/authService';
 import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
@@ -43,6 +44,11 @@ const HomePage = () => {
     }
   };
 
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -63,7 +69,7 @@ const HomePage = () => {
                 <Settings className="w-5 h-5" />
                 <span>Configurações</span>
               </button>
-              <button className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <button onClick={handleLogout} className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                 <LogOut className="w-5 h-5" />
                 <span>Sair</span>
               </button>
@@ -90,7 +96,7 @@ const HomePage = () => {
                   <Settings className="w-5 h-5" />
                   <span>Configurações</span>
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-left">
+                <button onClick={handleLogout} className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-left">
                   <LogOut className="w-5 h-5" />
                   <span>Sair</span>
                 </button>
