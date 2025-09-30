@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Car, MapPin, Calendar, Clock, Shield, AlertTriangle, Users, ArrowLeft } from "lucide-react";
+import { Car, MapPin, Calendar, Clock, Shield, AlertTriangle, Users, ArrowLeft, FileDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { sinistroService } from "../../services/sinistro/sinistroService";
+import { relatorioService } from "../../services/relatorio/relatorioService";
 
 export interface Sinistro {
   id: number;
@@ -30,8 +31,36 @@ export interface Sinistro {
 const SinistroViewer = () => {
   const [sinistros, setSinistros] = useState<Sinistro[]>([]);
   const [selectedSinistro, setSelectedSinistro] = useState<Sinistro | null>(null);
-  const fetchedRef = useRef(false); // 👈 evita chamada duplicada
+  const fetchedRef = useRef(false); 
   const navigate = useNavigate();
+
+  const [isDownloading, setIsDownloading] = useState(false);
+
+ const handleDownloadPDF = async () => {
+    if (!selectedSinistro) return;
+    
+    setIsDownloading(true);
+      try {
+          const pdfBlob = await relatorioService.downloadRelatorio(selectedSinistro.id);
+          
+          const url = window.URL.createObjectURL(pdfBlob);
+          
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `relatorio-sinistro-${selectedSinistro.id}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        
+      } catch (error) {
+        console.error("Erro ao baixar relatório:", error);
+        alert("Erro ao baixar o relatório. Tente novamente.");
+      } finally {
+        setIsDownloading(false);
+      }
+  };
 
   useEffect(() => {
     if (fetchedRef.current) return;
@@ -39,7 +68,7 @@ const SinistroViewer = () => {
 
     const fetchSinistros = async () => {
       try {
-        const response = await sinistroService.listarSinistrosById("123");
+        const response = await sinistroService.listarSinistrosById("4");
         if (response && Array.isArray(response)) {
           setSinistros(response);
           if (response.length > 0) {
@@ -157,8 +186,21 @@ const SinistroViewer = () => {
           {/* Detalhes do Sinistro */}
           <div className="lg:col-span-2">
             {selectedSinistro && (
+              
               <div className="space-y-6">
+
+                   <div className="flex justify-end">
+                      <button
+                        onClick={handleDownloadPDF}
+                        disabled={isDownloading}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors shadow-sm"
+                      >
+                        <FileDown className="w-4 h-4" />
+                        {isDownloading ? "Gerando PDF..." : "Baixar Relatório PDF"}
+                      </button>
+                   </div>
                 {/* Cards de Resumo */}
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <InfoCard
                     icon={AlertTriangle}
