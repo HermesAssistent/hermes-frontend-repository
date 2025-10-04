@@ -29,6 +29,7 @@ export interface Sinistro {
 }
 
 const SinistroViewer = () => {
+  const [user, setUser] = useState<any>({})
   const [sinistros, setSinistros] = useState<Sinistro[]>([]);
   const [selectedSinistro, setSelectedSinistro] = useState<Sinistro | null>(null);
   const fetchedRef = useRef(false); 
@@ -68,7 +69,10 @@ const SinistroViewer = () => {
 
     const fetchSinistros = async () => {
       try {
-        const response = await sinistroService.listarSinistrosById("4");
+        const infoUser = await localStorage.getItem('infoUsuario')
+        const infoConvertido = infoUser != null ? JSON.parse(infoUser) : undefined
+        setUser(infoConvertido)
+        const response = await sinistroService.listarSinistrosById(infoConvertido?.id);
         if (response && Array.isArray(response)) {
           setSinistros(response);
           if (response.length > 0) {

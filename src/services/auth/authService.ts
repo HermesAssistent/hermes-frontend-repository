@@ -13,7 +13,7 @@ export const authService = {
 
     const response = await api.post<AuthResponse>('/auth/login');
     response.data.token = token;
-    
+    localStorage.setItem('infoUsuario', JSON.stringify(response.data))
     return response.data;
   },
 
