@@ -7,6 +7,7 @@ export interface User {
   email: string;
   telefone?: string;
   endereco?: string;
+  role?: string;
 }
 
 interface AuthContextData {
