@@ -3,6 +3,7 @@ import { Eye, EyeOff, User, Mail, Lock, Phone, MapPin, Sparkles, UserPlus, LogIn
 import { authService } from '../../services/auth/authService';
 import { useNavigate } from 'react-router-dom';
 import { LoginCredentials } from '../../types/auth';
+import { useAuth } from '../../services/contexts/AuthContext';
 
 interface FormData {
   nome: string;
@@ -10,6 +11,8 @@ interface FormData {
   senha: string;
   telefone: string;
   endereco: string;
+  cpf: string
+  veiculo: string;
 }
 
 interface FormErrors {
@@ -18,10 +21,14 @@ interface FormErrors {
   senha?: string;
   telefone?: string;
   endereco?: string;
+  cpf?: string
+  veiculo?: string;
 }
 
 export default function LoginSignupForm(): JSX.Element {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Usa o hook do contexto
+  
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
@@ -29,7 +36,9 @@ export default function LoginSignupForm(): JSX.Element {
     email: '',
     senha: '',
     telefone: '',
-    endereco: ''
+    endereco: '',
+    cpf: '',
+    veiculo: ''
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [mensagem, setMensagem] = useState('');
@@ -79,39 +88,85 @@ export default function LoginSignupForm(): JSX.Element {
       if (!formData.endereco) {
         newErrors.endereco = 'Endereço é obrigatório';
       }
+
+      if (!formData.cpf) {
+        newErrors.cpf = 'CPF é obrigatório';
+      }
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (): Promise<void> => {
+    const handleSubmit = async (): Promise<void> => {
     setCarregando(true);
     setMensagem('');
 
     try {
-      if (validateForm()) {
-        if (isLogin) {
-          const credenciais: LoginCredentials = {email: formData.email, password: formData.senha};
-          await authService.login(credenciais);
-          console.log('Login realizado:', { email: formData.email });
-          setTimeout(() => {
-            navigate('/');
-          }, 1500);
-          
-        } else {
-          await authService.register(formData);
-          console.log('Cadastro realizado:', formData);
-
-          setMensagem('Cadastro realizado! Faça login com suas credenciais.');
-          setTimeout(() => {
-            navigate('/login');
-          }, 1500);
-          setIsLogin(true);
-        }
+      if (!validateForm()) {
+        setCarregando(false);
+        return;
       }
-    }catch (error: any) {
-      setMensagem('Erro: ' + error.message);
+
+      if (isLogin) {
+        const credenciais: LoginCredentials = {
+          email: formData.email,
+          password: formData.senha
+        };
+
+        const response = await authService.login(credenciais)
+        console.log('login response raw:', response);
+
+        // Normaliza payload caso authService use axios (response.data) ou fetch (response)
+        const payload = response;
+        console.log('login payload:', payload);
+
+        const user = payload?.user;
+        const token = payload?.token;
+
+        if (!user) {
+          console.error('Usuário indefinido na resposta do login', payload);
+          setMensagem('Erro: resposta inválida do servidor (usuário indefinido)');
+          return;
+        }
+
+        // Suporta id ou _id retornados pelo backend
+        const userId = (user as any).id ?? (user as any)._id;
+        if (userId == null) {
+          console.error('ID do usuário não foi retornado', user);
+          setMensagem('Erro: id do usuário não foi retornado pelo servidor');
+          return;
+        }
+
+        // Salva no contexto (que também salva no localStorage)
+        login(
+          {
+            id: userId,
+            nome: (user as any).nome ?? (user as any).name ?? '',
+            email: user.email ?? '',
+            telefone: user.telefone ?? '',
+            endereco: user.endereco ?? '',
+          },
+          token ?? ''
+        );
+
+        console.log('Login realizado com sucesso');
+        setMensagem('Login realizado com sucesso!');
+
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
+      } else {
+        await authService.register(formData);
+        console.log('Cadastro realizado:', formData);
+
+        setMensagem('Cadastro realizado! Faça login com suas credenciais.');
+        setTimeout(() => {
+          setIsLogin(true);
+        }, 1500);
+      }
+    } catch (error: any) {
+      setMensagem('Erro: ' + (error?.message ?? String(error)));
     } finally {
       setCarregando(false);
     }
@@ -141,7 +196,9 @@ export default function LoginSignupForm(): JSX.Element {
       email: '',
       senha: '',
       telefone: '',
-      endereco: ''
+      endereco: '',
+      cpf: '',
+      veiculo: ''
     });
     setErrors({});
   };
@@ -215,6 +272,32 @@ export default function LoginSignupForm(): JSX.Element {
                   <div className="flex items-center mt-2 text-red-500 text-sm">
                     <div className="w-1 h-1 bg-red-500 rounded-full mr-2"></div>
                     {errors.nome}
+                  </div>
+                )}
+              </div>
+            )}
+            {!isLogin && (
+              <div className="group">
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3 transition-colors group-focus-within:text-blue-600">
+                  <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg mr-3 shadow-lg">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  CPF
+                </label>
+                <input
+                  type="text"
+                  name="cpf"
+                  value={formData.cpf}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-4 bg-gray-50/80 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 backdrop-blur-sm ${
+                    errors.nome ? 'border-red-400 bg-red-50/50' : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  placeholder="CPF"
+                />
+                {errors.nome && (
+                  <div className="flex items-center mt-2 text-red-500 text-sm">
+                    <div className="w-1 h-1 bg-red-500 rounded-full mr-2"></div>
+                    {errors.cpf}
                   </div>
                 )}
               </div>

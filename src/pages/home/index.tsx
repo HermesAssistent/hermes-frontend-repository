@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { User, MessageCircle, Settings, LogOut, Send, Menu, X, GrapeIcon, GitGraph, Notebook } from "lucide-react";
 import { authService } from '../../services/auth/authService';
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../services/contexts/AuthContext";
 
 const HomePage = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -11,6 +12,7 @@ const HomePage = () => {
   ]);
   const [newMessage, setNewMessage] = useState("");
   const navigate = useNavigate();
+  const user = useAuth();
 
 
   const handleSendMessage = () => {
@@ -45,7 +47,7 @@ const HomePage = () => {
   };
 
   const handleLogout = () => {
-    authService.logout();
+    authService.logout(user.user?.id || '');
     navigate('/login');
   };
 

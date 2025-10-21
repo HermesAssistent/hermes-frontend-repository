@@ -28,10 +28,10 @@ export const authService = {
     return response.data;
   },
 
-  async logout(): Promise<void> {
+  async logout(id: string): Promise<void> {
     try {
       await signOut(auth);
-      await api.post('/auth/logout');
+      await api.post(`/auth/logout/${id}`);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       console.log('Logout realizado com sucesso!');
