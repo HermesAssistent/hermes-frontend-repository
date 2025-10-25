@@ -135,6 +135,46 @@ const ChatPage: React.FC = () => {
     }
   };
 
+  const handleUploadFoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const localUrl = URL.createObjectURL(file);
+    const previewMessage: Message = {
+      id: messages.length + 1,
+      text: "",
+      sender: "USER",
+      imageUrl: localUrl,
+    };
+    setMessages((prev) => [...prev, previewMessage]);
+
+    try {
+      setLoading(true);
+      const resposta = await chatService.uploadFoto(file, userId);
+
+      const confirmMessage: Message = {
+        id: messages.length + 2,
+        text: "📸 Foto enviada com sucesso!",
+        sender: "BOT",
+      };
+
+      setMessages((prev) => [...prev, confirmMessage]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: messages.length + 2,
+          text: "⚠️ Erro ao enviar foto.",
+          sender: "BOT",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+      event.target.value = "";
+    }
+  };
+
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {/* Header */}
@@ -156,7 +196,15 @@ const ChatPage: React.FC = () => {
                   : "bg-white text-gray-800 rounded-bl-none"
               }`}
             >
-              {msg.text}
+              {msg.imageUrl ? (
+                <img
+                  src={msg.imageUrl}
+                  alt="imagem enviada"
+                  className="rounded-2xl max-w-[200px] object-cover"
+                />
+              ) : (
+                msg.text
+              )}
             </div>
           </div>
         ))}
@@ -176,6 +224,21 @@ const ChatPage: React.FC = () => {
 
       {/* Input de mensagem */}
       <div className="p-4 bg-white border-t flex items-center gap-2">
+        <label className="cursor-pointer">
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleUploadFoto}
+          />
+          <img
+            src="/icone-upload.png"
+            alt="Enviar foto"
+            title="Enviar foto"
+            className="w-6 h-6 hover:opacity-75"
+          />
+        </label>
+
         <input
           type="text"
           className="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"

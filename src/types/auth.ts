@@ -24,6 +24,7 @@ export interface Message {
   id: number;
   text: string;
   sender: "USER" | "BOT";
+  imageUrl?: string;
 }
 
 export interface Sinistro {
