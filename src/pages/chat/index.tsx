@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { chatService } from "../../services/chat/chatService";
 import { Message } from "../../types/auth";
+import { useAuth } from "../../services/contexts/AuthContext";
 
 export const ChatHeader: React.FC = () => {
   return (
@@ -41,6 +42,7 @@ const ChatPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [secaoIniciada, setSecaoIniciada] = useState(false);
   const [secaoFinalizada, setSecaoFinalizada] = useState(false)
+  const user = useAuth()
 
   // Estado de controle de sessão
   const [userId, setUserId] = useState<string>("123");
@@ -51,7 +53,8 @@ const ChatPage: React.FC = () => {
   const iniciouRef = useRef(false);
 
   async function iniciarSecao() {
-    const inicio = await chatService.iniciarChat("123");
+    console.log("user ", user.user);
+    const inicio = await chatService.iniciarChat(user.user?.id || "");
     if (inicio) {
       setSecaoIniciada(true);
       await chatService.listarMensagens(inicio?.sessionId).then((res) => {
@@ -99,7 +102,7 @@ const ChatPage: React.FC = () => {
          await iniciarSecao()
       }
 
-      let respostaApi: any = await chatService.processarMensagem(userId, input);
+      let respostaApi: any = await chatService.processarMensagem(user?.user?.id || '', input);
 
       if (respostaApi?.rawResponse?.conversa_finalizada) {
          setConversaFinalizada(true)

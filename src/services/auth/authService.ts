@@ -17,9 +17,9 @@ export const authService = {
     return response.data;
   },
 
-  async register(credentials: any): Promise<AuthResponse> {
+  async register(credentials: any, userType: 'cliente' | 'seguradora'): Promise<AuthResponse> {
     console.log("enviando para o back...")
-    const response = await api.post<AuthResponse>('/auth/registrar/cliente', credentials);
+    const response = await api.post<AuthResponse>(`/auth/registrar/${userType}`, credentials);
     if (response.data.token) {
       console.log(response);
       localStorage.setItem('token', response.data.token);
@@ -28,10 +28,10 @@ export const authService = {
     return response.data;
   },
 
-  async logout(): Promise<void> {
+  async logout(id: string): Promise<void> {
     try {
       await signOut(auth);
-      await api.post('/auth/logout');
+      await api.post(`/auth/logout/${id}`);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       console.log('Logout realizado com sucesso!');

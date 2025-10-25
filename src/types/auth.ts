@@ -1,3 +1,4 @@
+import { User } from "../services/contexts/AuthContext";
 
 
 export interface AuthResponse {
@@ -15,12 +16,6 @@ export interface RegisterCredentials {
   email: string;
   password: string;
   confirmPassword?: string;
-}
-
-export interface User {
-  id?: number;
-  email: string;
-  name: string;
 }
 
 export interface Message {

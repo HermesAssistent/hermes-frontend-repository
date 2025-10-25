@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Header from './pages/layout/Header';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import { authService } from './services/auth/authService';
 import './App.css';
-import LoginSignupForm from './pages/auth/Login';
-import ChatPage from './pages/chat';
 import { AppRouter } from './routes';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase.config';
+import { AuthProvider } from './services/contexts/AuthContext';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -28,7 +23,9 @@ const App: React.FC = () => {
   if (loading) return <div>Carregando...</div>;
 
   return <>
-     <AppRouter />
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
   </>
 }
 

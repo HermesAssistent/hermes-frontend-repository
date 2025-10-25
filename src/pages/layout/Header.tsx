@@ -9,7 +9,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogout }) => {
   const handleLogout = () => {
-    authService.logout();
+    authService.logout(user.id);
     onLogout();
   };
 
