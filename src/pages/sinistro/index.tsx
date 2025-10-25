@@ -3,6 +3,7 @@ import { Car, MapPin, Calendar, Clock, Shield, AlertTriangle, Users, ArrowLeft, 
 import { useNavigate } from "react-router-dom";
 import { sinistroService } from "../../services/sinistro/sinistroService";
 import { relatorioService } from "../../services/relatorio/relatorioService";
+import { useAuth } from "../../services/contexts/AuthContext";
 
 export interface Sinistro {
   id: number;
@@ -29,7 +30,7 @@ export interface Sinistro {
 }
 
 const SinistroViewer = () => {
-  const [user, setUser] = useState<any>({})
+  const {user, clienteId} = useAuth()
   const [sinistros, setSinistros] = useState<Sinistro[]>([]);
   const [selectedSinistro, setSelectedSinistro] = useState<Sinistro | null>(null);
   const fetchedRef = useRef(false); 
@@ -69,10 +70,8 @@ const SinistroViewer = () => {
 
     const fetchSinistros = async () => {
       try {
-        const infoUser = await localStorage.getItem('infoUsuario')
-        const infoConvertido = infoUser != null ? JSON.parse(infoUser) : undefined
-        setUser(infoConvertido)
-        const response = await sinistroService.listarSinistrosById(infoConvertido?.id);
+        const clienteIdBusca = clienteId || localStorage.getItem('@App:clienteId')
+        const response = await sinistroService.listarSinistrosById(String(clienteIdBusca || ''));
         if (response && Array.isArray(response)) {
           setSinistros(response);
           if (response.length > 0) {

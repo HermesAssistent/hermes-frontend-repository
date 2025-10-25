@@ -4,6 +4,8 @@ import { User } from "../services/contexts/AuthContext";
 export interface AuthResponse {
   user: User;
   token: string;
+  clienteId?: number;
+  seguradoraId?: number;
 }
 
 export interface LoginCredentials {

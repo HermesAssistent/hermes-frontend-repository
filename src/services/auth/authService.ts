@@ -9,11 +9,9 @@ export const authService = {
     const userCredencials = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
     const user = userCredencials.user;
     const token = await user.getIdToken();
-    localStorage.setItem('token', token);
-
+    localStorage.setItem('@App:token', token);
     const response = await api.post<AuthResponse>('/auth/login');
     response.data.token = token;
-    localStorage.setItem('infoUsuario', JSON.stringify(response.data))
     return response.data;
   },
 
@@ -22,8 +20,8 @@ export const authService = {
     const response = await api.post<AuthResponse>(`/auth/registrar/${userType}`, credentials);
     if (response.data.token) {
       console.log(response);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('@App:token', response.data.token);
+      localStorage.setItem('@App:user', JSON.stringify(response.data.user));
     }
     return response.data;
   },
@@ -32,21 +30,20 @@ export const authService = {
     try {
       await signOut(auth);
       await api.post(`/auth/logout/${id}`);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      console.log('Logout realizado com sucesso!');
+      localStorage.removeItem('@App:token');
+      localStorage.removeItem('@App:user');      console.log('Logout realizado com sucesso!');
     } catch (err: any) {
       console.error('Erro ao fazer logout:', err.message);
     }
   },
 
   getCurrentUser(): any {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('@App:user');
     if (userStr) return JSON.parse(userStr);
     return null;
   },
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('@App:token');
   }
 };

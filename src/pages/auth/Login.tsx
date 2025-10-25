@@ -172,6 +172,8 @@ export default function LoginSignupForm(): JSX.Element {
         const payload = response;
         const user = payload?.user;
         const token = payload?.token;
+        const clienteId = payload?.clienteId;
+        const seguradoraId = payload?.seguradoraId;
 
         if (!user) {
           setMensagem('Erro: resposta inválida do servidor');
@@ -191,9 +193,11 @@ export default function LoginSignupForm(): JSX.Element {
             email: user.email ?? '',
             telefone: user.telefone ?? '',
             endereco: user.endereco ?? '',
-            role: user.role ?? ''
+            role: user.role ?? '',
+           
           },
-          token ?? ''
+          token ?? '',
+          { clienteId, seguradoraId }
         );
 
         setMensagem('Login realizado com sucesso!');
@@ -208,7 +212,7 @@ export default function LoginSignupForm(): JSX.Element {
         setTimeout(() => setIsLogin(true), 1500);
       }
     } catch (error: any) {
-      setMensagem('Erro: ' + (error?.message ?? String(error)));
+      setMensagem('Erro: ' + (error?.status === 500 ? 'Erro no servidor, tente novamente mais tarde.' : error?.response?.data?.message ));
     } finally {
       setCarregando(false);
     }

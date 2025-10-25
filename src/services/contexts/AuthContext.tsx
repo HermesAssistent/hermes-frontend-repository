@@ -13,9 +13,11 @@ export interface User {
 interface AuthContextData {
   user: User | null;
   token: string | null;
+  clienteId?: number | null;
+  seguradoraId?: number | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (user: User, token: string) => void;
+  login: (user: User, token: string, infoPerfil: {clienteId?: number, seguradoraId?: number}) => void;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
 }
@@ -31,6 +33,8 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [clienteId, setClienteId] = useState<number | null>(null);
+  const [seguradoraId, setSeguradoraId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Carrega dados do localStorage ao iniciar
@@ -55,13 +59,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   // Função de login
-  const login = (userData: User, userToken: string) => {
+  const login = (userData: User, userToken: string, infoPerfil: {clienteId?: number, seguradoraId?: number}) => {
     setUser(userData);
     setToken(userToken);
-    
+    setClienteId(infoPerfil?.clienteId || null);
     // Salva no localStorage
     localStorage.setItem('@App:user', JSON.stringify(userData));
     localStorage.setItem('@App:token', userToken);
+    localStorage.setItem('@App:clienteId', infoPerfil?.clienteId ? infoPerfil?.clienteId.toString() : '');
+    localStorage.setItem('@App:seguradoraId', infoPerfil?.seguradoraId ? infoPerfil?.seguradoraId.toString() : '');
   };
 
   // Função de logout
@@ -72,6 +78,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Remove do localStorage
     localStorage.removeItem('@App:user');
     localStorage.removeItem('@App:token');
+    localStorage.removeItem('@App:clienteId');
+    localStorage.removeItem('@App:seguradoraId');
   };
 
   // Função para atualizar dados do usuário
@@ -95,6 +103,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         login,
         logout,
         updateUser,
+        clienteId,
+        seguradoraId
       }}
     >
       {children}

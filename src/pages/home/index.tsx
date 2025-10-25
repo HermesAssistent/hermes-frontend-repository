@@ -87,7 +87,7 @@ const HomePage = () => {
           {isMenuOpen && (
             <div className={`md:hidden py-4 border-t ${colors.headerBorder}`}>
               <div className="flex flex-col space-y-2">
-                <button className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${colors.headerHover} transition-colors text-left`}>
+                <button onClick={() => navigate('/perfil')} className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${colors.headerHover} transition-colors text-left`}>
                   <User className="w-5 h-5" />
                   <span>Perfil</span>
                 </button>
@@ -160,7 +160,7 @@ const HomePage = () => {
         ) : (
           // Cards para Cliente Normal
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <div className={`bg-white border-2 ${colors.cardBorder} rounded-xl p-6 ${colors.cardBorderHover} hover:shadow-lg transition-all cursor-pointer`}>
+            <div onClick={() => navigate('/perfil')} className={`bg-white border-2 ${colors.cardBorder} rounded-xl p-6 ${colors.cardBorderHover} hover:shadow-lg transition-all cursor-pointer`}>
               <div className={`w-12 h-12 ${colors.cardBg} rounded-lg flex items-center justify-center mb-4`}>
                 <User className={`w-6 h-6 ${colors.iconText}`} />
               </div>
@@ -198,7 +198,7 @@ const HomePage = () => {
                 <MessageCircle className="w-5 h-5" />
                 <span>Iniciar Chat</span>
               </button>
-              <button className={`bg-white ${colors.textButton} border-2 ${colors.buttonBorder} px-6 py-3 rounded-lg ${colors.buttonBorderHover} transition-colors flex items-center space-x-2 font-medium`}>
+              <button onClick={() => navigate('/perfil')} className={`bg-white ${colors.textButton} border-2 ${colors.buttonBorder} px-6 py-3 rounded-lg ${colors.buttonBorderHover} transition-colors flex items-center space-x-2 font-medium`}>
                 <User className="w-5 h-5" />
                 <span>Ver Perfil</span>
               </button>

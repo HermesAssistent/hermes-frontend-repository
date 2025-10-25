@@ -6,6 +6,8 @@ import LoginSignupForm from "../pages/auth/Login";
 import SinistroViewer from "../pages/sinistro";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../firebase.config";
+import PerfilCliente from "../pages/perfil";
+import AuthContainer from "../pages/auth/AuthContainer";
 
 const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -48,12 +50,20 @@ export const AppRouter: React.FC = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/login" element={<LoginSignupForm />} />
+        <Route path="/login" element={<AuthContainer />} />
         <Route 
           path="/sinistro" 
           element={
             <ProtectedRoute>
               <SinistroViewer />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/perfil" 
+          element={
+            <ProtectedRoute>
+              <PerfilCliente />
             </ProtectedRoute>
           } 
         />
