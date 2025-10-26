@@ -147,10 +147,11 @@ const ChatPage: React.FC = () => {
       imageUrl: localUrl,
     };
     setMessages((prev) => [...prev, previewMessage]);
+    const sessionId = localStorage.getItem('sessionId') ?? '0'
 
     try {
       setLoading(true);
-      const resposta = await chatService.uploadFoto(file, userId);
+      const resposta = await chatService.uploadFoto(file, sessionId);
 
       const confirmMessage: Message = {
         id: messages.length + 2,
@@ -159,6 +160,41 @@ const ChatPage: React.FC = () => {
       };
 
       setMessages((prev) => [...prev, confirmMessage]);
+      
+      setLoading(true);
+
+      try {
+        let respostaApi: any = await chatService.processarMensagem(user?.user?.id || '', "Fotos enviadas");
+
+        if (respostaApi?.rawResponse?.conversa_finalizada) {
+          setConversaFinalizada(true)
+        }
+        // Mensagem de resposta do Hermes
+        const newMessageApi: Message = {
+          id: messages.length + 2,
+          text:
+            respostaApi.rawResponse?.resposta ||
+            respostaApi.rawResponse?.mensagem_final,
+          sender: "BOT",
+        };
+
+        setMessages((prev) => [...prev, newMessageApi]);
+
+        if (respostaApi.conversa_finalizada) {
+          setConversaFinalizada(true);
+        }
+      } catch (err) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: messages.length + 2,
+            text: "⚠️ Ocorreu um erro na comunicação.",
+            sender: "BOT",
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
     } catch (err) {
       setMessages((prev) => [
         ...prev,
