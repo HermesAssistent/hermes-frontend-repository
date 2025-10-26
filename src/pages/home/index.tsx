@@ -186,8 +186,8 @@ const HomePage = () => {
           </div>
         )}
 
-        {/* Quick Actions - Apenas para clientes normais */}
-        {!isSeguradora && (
+        {/* Quick Actions*/}
+        {!isSeguradora ? (
           <div className="text-center">
             <h3 className="text-2xl font-semibold text-gray-800 mb-6">Ações Rápidas</h3>
             <div className="flex flex-wrap justify-center gap-4">
@@ -204,7 +204,18 @@ const HomePage = () => {
               </button>
             </div>
           </div>
-        )}
+        ) :  <div className="text-center">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6">Ações Rápidas</h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              <button
+                onClick={() => navigate('/chat-seguradora')}
+                className={`${colors.button} text-white px-6 py-3 rounded-lg ${colors.buttonHover} transition-colors flex items-center space-x-2 font-medium`}
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span>Iniciar Chat</span>
+              </button>
+            </div>
+          </div>}
       </main>
     </div>
   );

@@ -8,6 +8,8 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../firebase.config";
 import PerfilCliente from "../pages/perfil";
 import AuthContainer from "../pages/auth/AuthContainer";
+import ChatSQL from "../pages/auth/chat_seguradora";
+import HermesDashboard from "../pages/auth/dashboards";
 
 const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -64,6 +66,22 @@ export const AppRouter: React.FC = () => {
           element={
             <ProtectedRoute>
               <PerfilCliente />
+            </ProtectedRoute>
+          } 
+        />
+         <Route 
+          path="/chat-seguradora" 
+          element={
+            <ProtectedRoute>
+              <ChatSQL />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/dashboards" 
+          element={
+            <ProtectedRoute>
+              <HermesDashboard />
             </ProtectedRoute>
           } 
         />
