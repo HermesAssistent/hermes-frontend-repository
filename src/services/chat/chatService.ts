@@ -6,6 +6,9 @@ async iniciarChat(userId: string) {
     const response = await api.post(`/chat/iniciar`, null, {
       params: { userId },
     });
+    if (response.data) {
+      localStorage.setItem('sessionId', response.data?.sessionId)
+    }
     return response.data;
   },
 
