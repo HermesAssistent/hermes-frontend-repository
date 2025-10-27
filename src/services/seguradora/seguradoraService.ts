@@ -16,7 +16,7 @@ export const seguradoraService = {
      return response.data;
   },
   async listarClientesDaSeguradora(seguradoraId: string) {
-     const response = await api.get(`/seguradora/`+ seguradoraId + `/clientes`);
+     const response = await api.get(`/seguradora/listar-clientes/`+ seguradoraId);
      return response.data;
   },
 }

@@ -147,7 +147,7 @@ const HomePage = () => {
             </div>
 
             <div 
-              onClick={() => navigate('/clientes')}
+              onClick={() => navigate('/clientes-seguradora')}
               className={`bg-white border-2 ${colors.cardBorder} rounded-xl p-6 ${colors.cardBorderHover} hover:shadow-lg transition-all cursor-pointer`}
             >
               <div className={`w-12 h-12 ${colors.cardBg} rounded-lg flex items-center justify-center mb-4`}>
