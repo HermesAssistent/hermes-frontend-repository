@@ -11,6 +11,7 @@ import AuthContainer from "../pages/auth/AuthContainer";
 import ChatSQL from "../pages/auth/chat_seguradora";
 import HermesDashboard from "../pages/auth/dashboards";
 import ListaClientes from "../pages/auth/clientes_seguradora";
+import ListaOficinas from "../pages/auth/oficinas";
 
 const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -91,6 +92,14 @@ export const AppRouter: React.FC = () => {
           element={
             <ProtectedRoute>
               <ListaClientes />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/oficinas" 
+          element={
+            <ProtectedRoute>
+              <ListaOficinas />
             </ProtectedRoute>
           } 
         />

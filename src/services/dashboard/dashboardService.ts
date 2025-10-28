@@ -8,9 +8,9 @@ export interface DashboardStats {
   sinistrosComFeridos: number;
   sinistrosAtivos: number;
   gravidade: {
-    leve: number;
+    baixa: number;
     moderada: number;
-    grave: number;
+    alta: number;
   };
 }
 

@@ -36,9 +36,9 @@ export default function HermesDashboard() {
     sinistrosComFeridos: 0,
     sinistrosAtivos: 0,
     gravidade: {
-      leve: 0,
+      baixa: 0,
       moderada: 0,
-      grave: 0
+      alta: 0
     }
   });
 
@@ -78,9 +78,9 @@ export default function HermesDashboard() {
 
   // Dados para gráfico de pizza (Gravidade)
   const gravidadeData = [
-    { name: 'Leve', value: stats.gravidade.leve, color: '#10b981' },
+    { name: 'Baixa', value: stats.gravidade.baixa, color: '#10b981' },
     { name: 'Moderada', value: stats.gravidade.moderada, color: '#f59e0b' },
-    { name: 'Grave', value: stats.gravidade.grave, color: '#ef4444' }
+    { name: 'Alta', value: stats.gravidade.alta, color: '#ef4444' }
   ];
 
   const StatCard = ({ title, value, icon: Icon, color, subtitle }: any) => (
@@ -100,9 +100,9 @@ export default function HermesDashboard() {
 
   const getGravidadeColor = (gravidade: string) => {
     switch (gravidade.toUpperCase()) {
-      case 'LEVE': return 'bg-green-100 text-green-800';
+      case 'BAIXA': return 'bg-green-100 text-green-800';
       case 'MODERADA': return 'bg-yellow-100 text-yellow-800';
-      case 'GRAVE': return 'bg-red-100 text-red-800';
+      case 'ALTA': return 'bg-red-100 text-red-800';
       default: return 'bg-slate-100 text-slate-800';
     }
   };
