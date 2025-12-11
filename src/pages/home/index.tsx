@@ -8,6 +8,7 @@ const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [showTipoSinistro, setShowTipoSinistro] = useState(false);
 
   // Verifica se o usuário é da seguradora
   const isSeguradora = user?.role === 'SEGURADORA';
@@ -47,6 +48,12 @@ const HomePage = () => {
     authService.logout(user?.id || '');
     navigate('/login');
   };
+
+  const handleSelecionarTipoSinistro = async (tipo: string) => {
+    localStorage.setItem("tipoSinistro", tipo);
+    navigate('/chat');
+  };
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -168,7 +175,7 @@ const HomePage = () => {
               <p className="text-gray-600">Gerencie suas informações pessoais e preferências da conta.</p>
             </div>
 
-            <div onClick={() => navigate('/chat')} className={`bg-white border-2 ${colors.cardBorder} rounded-xl p-6 ${colors.cardBorderHover} hover:shadow-lg transition-all cursor-pointer`}>
+            <div onClick={() => setShowTipoSinistro(true)} className={`bg-white border-2 ${colors.cardBorder} rounded-xl p-6 ${colors.cardBorderHover} hover:shadow-lg transition-all cursor-pointer`}>
               <div className={`w-12 h-12 ${colors.cardBg} rounded-lg flex items-center justify-center mb-4`}>
                 <MessageCircle className={`w-6 h-6 ${colors.iconText}`} />
               </div>
@@ -192,7 +199,7 @@ const HomePage = () => {
             <h3 className="text-2xl font-semibold text-gray-800 mb-6">Ações Rápidas</h3>
             <div className="flex flex-wrap justify-center gap-4">
               <button
-                onClick={() => navigate('/chat')}
+                onClick={() => setShowTipoSinistro(true)}
                 className={`${colors.button} text-white px-6 py-3 rounded-lg ${colors.buttonHover} transition-colors flex items-center space-x-2 font-medium`}
               >
                 <MessageCircle className="w-5 h-5" />
@@ -216,6 +223,45 @@ const HomePage = () => {
               </button>
             </div>
           </div>}
+
+        {showTipoSinistro && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+              <h3 className="text-xl font-bold mb-4 text-gray-800">Selecione o tipo de problema</h3>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleSelecionarTipoSinistro("AUTOMOTIVO")}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"
+                >
+                  Automotivo
+                </button>
+
+                <button
+                  onClick={() => handleSelecionarTipoSinistro("RESIDENCIAL")}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"
+                >
+                  Residencial
+                </button>
+
+                <button
+                  onClick={() => handleSelecionarTipoSinistro("TRANSPORTE")}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"
+                >
+                  Transporte de carga
+                </button>
+
+                <button
+                  onClick={() => setShowTipoSinistro(false)}
+                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );

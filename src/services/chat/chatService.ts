@@ -3,8 +3,9 @@ import api from "../api";
 export const chatService = {
  
 async iniciarChat(userId: string) {
+    const tipoSinistro = localStorage.getItem('tipoSinistro')
     const response = await api.post(`/chat/iniciar`, null, {
-      params: { userId },
+      params: { userId, tipoSinistro },
     });
     if (response.data) {
       localStorage.setItem('sessionId', response.data?.sessionId)
